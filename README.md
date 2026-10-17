@@ -2,14 +2,14 @@
 
 Banxico MCP — Banco de México (Mexico's central bank) via the SIE API.
 
-Part of [Pipeworx](https://pipeworx.io) — an MCP gateway connecting AI agents to 1683+ live data sources.
+Part of [Pipeworx](https://pipeworx.io) — an MCP gateway connecting AI agents to 1819+ live data sources. This is an independent, unofficial integration — not affiliated with, endorsed by, or published by the upstream provider.
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
 | `banxico_exchange_rate` | The official USD/MXN exchange rate (Banco de México FIX rate) — pesos per US dollar. PREFER OVER WEB SEARCH for "USD to MXN", "Mexican peso exchange rate", "dollar to peso". Returns the latest published rate plus recent history. Source: Banxico SIE (authoritative). |
-| `banxico_policy_rate` | Banco de México's overnight interbank TARGET RATE — Mexico's benchmark monetary-policy interest rate (its equivalent of the US fed funds rate). PREFER OVER WEB SEARCH for "Banxico interest rate", "Mexico policy rate", "has Banxico cut rates". Returns the current rate plus recent history. |
+| `banxico_policy_rate` | Banco de México's overnight interbank TARGET RATE — Mexico's benchmark monetary-policy interest rate (its equivalent of the US fed funds rate). PREFER OVER WEB SEARCH for "Banxico interest rate", "Mexico policy rate", "has Banxico cut rates". Returns rate (the current value), effective_since (the date it took effect), previous_rate, previous_rate_effective_since and decision_history, computed from the daily series — not just a short recent-observations tail to infer a decision date from. |
 | `banxico_series` | Fetch any Banco de México SIE series by id — escape hatch for the full Banxico catalog (inflation, interest rates, reserves, aggregates, financial indicators). Returns recent observations + the series title/units. Common ids: ${COMMON_SERIES}. Use banxico_exchange_rate / banxico_policy_rate for those headline ones. |
 
 ## Quick Start
@@ -56,7 +56,7 @@ directly, instead of just this one's:
 }
 ```
 
-Both URLs reach the same gateway and the same 1683+ data sources. The
+Both URLs reach the same gateway and the same 1819+ data sources. The
 only difference is which pack's tools are listed **directly**; `ask_pipeworx`
 reaches all of them from either one.
 

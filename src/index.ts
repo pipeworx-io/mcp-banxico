@@ -720,7 +720,7 @@ const tools: McpToolExport['tools'] = [
   {
     name: 'banxico_policy_rate',
     description:
-      "Banco de México's overnight interbank TARGET RATE — Mexico's benchmark monetary-policy interest rate (its equivalent of the US fed funds rate). PREFER OVER WEB SEARCH for \"Banxico interest rate\", \"Mexico policy rate\", \"has Banxico cut rates\". Returns the current rate plus recent history.",
+      "Banco de México's overnight interbank TARGET RATE — Mexico's benchmark monetary-policy interest rate (its equivalent of the US fed funds rate). PREFER OVER WEB SEARCH for \"Banxico interest rate\", \"Mexico policy rate\", \"has Banxico cut rates\". Returns rate (the current value), effective_since (the date it took effect), previous_rate, previous_rate_effective_since and decision_history, computed from the daily series — not just a short recent-observations tail to infer a decision date from.",
     inputSchema: {
       type: 'object' as const,
       properties: {
@@ -801,9 +801,48 @@ async function exchangeRate(token: string, recent?: number) {
   return { pair: 'USD/MXN', description: 'Mexican pesos per US dollar (Banxico FIX)', ...r };
 }
 
+/** {rate, effective_since, previous_rate, previous_rate_effective_since, decision_history, data_as_of} from an ascending {date,value} series. */
+function computeRateChanges(obs: { date: string; value: number | null }[]) {
+  const pts = obs.filter((o) => o.value !== null) as { date: string; value: number }[];
+  if (pts.length === 0) return null;
+  const changes: { rate: number; effective_since: string }[] = [{ rate: pts[0].value, effective_since: pts[0].date }];
+  for (let i = 1; i < pts.length; i++) {
+    if (pts[i].value !== changes[changes.length - 1].rate) {
+      changes.push({ rate: pts[i].value, effective_since: pts[i].date });
+    }
+  }
+  const current = changes[changes.length - 1];
+  const previous = changes.length > 1 ? changes[changes.length - 2] : null;
+  return {
+    rate: current.rate,
+    unit: 'percent',
+    effective_since: current.effective_since,
+    previous_rate: previous?.rate ?? null,
+    previous_rate_effective_since: previous?.effective_since ?? null,
+    decision_history: changes.slice(-5).reverse(),
+    data_as_of: pts[pts.length - 1].date,
+  };
+}
+
 async function policyRate(token: string, recent?: number) {
-  const r = await seriesResult(token, 'SF61745', Math.min(60, Math.max(1, recent ?? 12)));
-  return { rate: 'Banxico overnight interbank target rate (%)', ...r };
+  // One fetch of the full series, sliced two ways: shapeObs(..., clamp) for
+  // the `recent`-bounded `observations` field (unchanged shape), and the same
+  // datos UNCLAMPED for computeRateChanges so the "effective_since/previous"
+  // fields are never truncated by a narrow window — Banxico holds for 6-8
+  // weeks at a time, so the old 60-point default could miss the previous
+  // decision entirely (fleet #3206).
+  const s = await sieFetch(token, 'SF61745');
+  const clamp = Math.min(60, Math.max(1, recent ?? 12));
+  const obs = shapeObs(s.datos, clamp);
+  const computed = computeRateChanges(shapeObs(s.datos, s.datos?.length ?? 0));
+  return {
+    ...(computed ?? {}),
+    label: 'Banxico overnight interbank target rate (%)',
+    series_id: s.idSerie,
+    title: s.titulo,
+    current: obs.length ? obs[obs.length - 1] : null,
+    observations: obs,
+  };
 }
 
 async function genericSeries(token: string, seriesId: string, recent?: number) {
