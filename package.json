@@ -1,12 +1,20 @@
 {
   "name": "@pipeworx/mcp-banxico",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Banxico MCP — Banco de México (Mexico's central bank) via the SIE API.",
   "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./tools.json": "./tools.json",
+    "./package.json": "./package.json"
+  },
   "bin": {
     "mcp-banxico": "bin/cli.js"
+  },
+  "files": ["bin/", "lib/", "tools.json", "server.json"],
+  "engines": {
+    "node": ">=18"
   },
   "keywords": ["mcp", "mcp-server", "model-context-protocol", "pipeworx", "banxico"],
   "license": "MIT",
@@ -14,19 +22,12 @@
     "type": "git",
     "url": "git+https://github.com/pipeworx-io/mcp-banxico.git"
   },
-  "scripts": {
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0",
-    "tsx": "^4.19.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.3",
-    "@cloudflare/workers-types": "^4.20260405.1"
-  },
+  "mcpName": "io.github.pipeworx-io/banxico",
   "pipeworx": {
-    "sourceHash": "v1-a3c15e601620347dd9b0903ae94638e04f7d4a6b325680786462f8de7bf08a20",
-    "sourceCommit": "93c7d52ace03a2bb9aee5e6024f6858adab0dd04"
+    "mode": "gateway",
+    "slug": "banxico",
+    "gatewaySlug": "banxico",
+    "sourceHash": "v1-753cd401f835550825aa5e1378ed8823e9b724869f43dcda5d4fcc21e725dd3f",
+    "sourceCommit": "4277282d72f9bf55e548b3799aaf737baf22152f"
   }
 }
