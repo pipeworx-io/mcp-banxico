@@ -1,6 +1,6 @@
 {
   "name": "@pipeworx/mcp-banxico",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Banxico MCP — Banco de México (Mexico's central bank) via the SIE API.",
   "type": "module",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
     "mode": "gateway",
     "slug": "banxico",
     "gatewaySlug": "banxico",
-    "sourceHash": "v1-753cd401f835550825aa5e1378ed8823e9b724869f43dcda5d4fcc21e725dd3f",
-    "sourceCommit": "4277282d72f9bf55e548b3799aaf737baf22152f"
+    "sourceHash": "v1-69f656de5b6a5259d94a80b4aec521cbf4416d50029a1a5bc17b81a5b3810d41",
+    "sourceCommit": "5cb09714e895571153f3d9663c36ff0f140cadd6"
   }
 }
